@@ -1,0 +1,135 @@
+---
+# tasks file for common
+
+# permissive SELinux
+- name: Ensure that the selinux packages are installed
+  tags: selinux
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  register: selinux_yum
+  loop:
+    - libselinux-python
+    - selinux-policy
+
+- name: Applying selinux policy and state configurations
+  tags: selinux
+  become: true
+  selinux:
+    conf: "{{ selinux_conf }}"
+    policy: "{{ selinux_policy }}"
+    state: "{{ selinux_state }}"
+  register: selinux_module
+  when: selinux_yum is success
+
+- name: disable CentOS Virt Xen repos that we don't use
+  yum_repository:
+    name: centos-virt-xen
+    state: absent
+  notify: yum-clean-metadata
+
+- name: install the epel-release
+  become: true
+  yum:
+    name: epel-release
+    state: present
+  tags:
+    - init
+
+- name: install the python-pip
+  become: true
+  yum:
+    name: python-pip
+    enablerepo: epel
+    state: present
+  tags:
+    - init
+
+- name: "Installing Docker Prerequisite packages"
+  become: true
+  yum:
+    name: ['yum-utils', 'device-mapper-persistent-data', 'lvm2']
+    state: latest
+  tags: 
+    - init
+
+- name: "Configuring docker-ce repo"
+  become: true
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: 0644
+  tags: 
+    - init
+
+- name: " Installing Docker latest version"
+  become: true
+  yum:
+    name: docker-ce
+    state: present
+  tags: 
+    - init
+
+- name: " Starting and Enabling Docker service"
+  become: true
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  tags: 
+    - init
+
+- name: upgrade pip
+  become: true
+  command: "pip install --upgrade pip"
+  tags:
+    - init
+
+- name: be sure ntp is installed
+  become: true
+  yum: name=ntp state=installed
+  tags: 
+    - ntp
+    - init
+
+- name: be sure ntpd is running and enabled
+  become: true
+  service: name=ntpd state=started enabled=yes
+  tags: 
+    - ntp
+    - init
+
+# We need to uninstall default python requests first for docker python pkg
+- name: " Uninstall python requests to avoid conflict for python docker"
+  become: true
+  yum:
+    name: python-requests
+    state: absent
+  tags:
+    - deploy
+
+- name: pip install docker
+  become: true
+  command: "pip install docker"
+  tags:
+    - deploy
+
+- name: " Reinstall python requests after python docker"
+  become: true
+  yum:
+    name: python-requests
+    state: present
+  tags:
+    - deploy
+# - name: copy docker clear scripts
+#   become: true
+#   copy:
+#     src: clear-docker-images.sh
+#     dest: "/mnt/clear-docker-images.sh"
+#     mode: 0755
+#   tags:
+#     - init
+
+#- debug: var=hostvars[inventory_hostname]
+#- debug: var=group_names

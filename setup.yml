@@ -1,0 +1,7 @@
+---
+- import_playbook: setup-elasticsearch.yml
+- import_playbook: setup-kibana.yml
+- import_playbook: setup-event-listener.yml
+- import_playbook: setup-bc-ipfs-node.yml
+- import_playbook: setup-bc-ipfs.yml
+
