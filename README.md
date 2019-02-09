@@ -1,5 +1,11 @@
 # BlockMed Ansible Configuration Manager
 
+**Prerequisite:** 
+
+- Target OS: Redhat/CentOS Linux
+- Memory: 4GB+
+- Disk: 20GB+
+
 ## Setup for control machine (e.g: localhost)
 
 ### Runtime Environment
