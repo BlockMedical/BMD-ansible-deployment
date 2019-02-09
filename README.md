@@ -44,6 +44,22 @@ host alias for your machines.
 - es-node: The machine runs the elastic search application. Only apply to `production` env.
 - event-listener: The machine runs the Ethereum event listener application. Only apply to `production` env.
 
+e.g.
+```
+Host target
+  User centos
+  HostName YOUR_SSH_IP_ADDRESS
+  Port 22
+  IdentityFile PATH_TO_YOUR_PEM_PRIVATE_KEY
+  ForwardX11 no
+  Compression no
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+  GlobalKnownHostsFile /dev/null
+  ServerAliveInterval 15
+  TCPKeepAlive yes
+  Protocol 1,2
+```
 
 ### Install Dependencies Roles from Ansible Galaxy
 
