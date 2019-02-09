@@ -13,7 +13,7 @@ elasticsearch:
   hosts:
     - localhost:9200
   search_url:
-    blockmed_ipfs: "http://blockmed.ai:9200/blockmed-ipfs/_search/template"
+    blockmed_ipfs: "http://es.blockmed.ai:9200/blockmed-ipfs/_search/template"
   authorization: "Basic cmVhZGFsbDpyZWFkYWxs"
 
 ipfs:
