@@ -226,3 +226,115 @@ ref:[stackoverflow](https://stackoverflow.com/questions/44541463/limit-ansible-p
 ```
 ansible all -m shell -a "df -h|grep /dev/xvd"
 ```
+
+## Additional Setup with Nginx
+You can also use nginx as a proxy if you don't want to re-map the ports to public ports. The following is a convinient
+script for you to do run nginx.
+
+```
+#!/bin/bash
+
+docker run -d --restart=always \
+  --name nginx \
+  --publish 80:80 \
+  --publish 443:443 \
+  --mount type=bind,source=/etc/nginx,target=/etc/nginx \
+  --mount type=bind,source=/var/log/nginx,target=/var/log/nginx \
+  nginx:latest
+  ```
+  
+  Assuming your host is running on a private network interface IP `192.168.1.5` and your SSL certificates are installed under `/etc/nginx/certs`, a similar `/etc/nginx/nginx.conf`
+  will look like this.
+  
+  ```
+  error_log  /var/log/nginx/error.log;
+pid        /var/log/nginx/nginx.pid;
+worker_rlimit_nofile 8192;
+events {
+    worker_connections  4096;  ## Default: 1024
+}
+http {
+    log_format   main '$remote_addr - $remote_user [$time_local]  $status '
+              '"$request" $body_bytes_sent "$http_referer" '
+                  '"$http_user_agent" "$http_x_forwarded_for"';
+    access_log   /var/log/nginx/access.log  main;
+    client_max_body_size 1024M;
+    server {
+        listen       80;
+        listen       443    ssl;
+        server_name  ipfs.blockmed.ai;
+        ssl_certificate         /etc/nginx/certs/cert_chain.crt;
+        ssl_certificate_key     /etc/nginx/certs/private.key;
+        error_page  405     =200 $uri;
+        location / {
+            proxy_http_version      1.1;
+            proxy_set_header        Upgrade         $http_upgrade;
+            proxy_pass              http://192.168.1.5:3000/;
+            proxy_set_header        X-Real-IP       $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        Host            $http_host;
+            proxy_hide_header       Access-Control-Allow-Origin;
+            proxy_hide_header       Access-Control-Allow-Methods;
+            proxy_hide_header       Access-Control-Allow-Credentials;
+            proxy_hide_header       Access-Control-Allow-Headers;
+            add_header              Access-Control-Allow-Origin         *	always;
+            add_header              Access-Control-Allow-Credentials    true	always;
+            add_header              Access-Control-Allow-Methods        POST,GET,PUT	always;
+            proxy_connect_timeout   300;
+            proxy_send_timeout      300;
+            proxy_read_timeout      300;
+            proxy_buffers           32 4k;
+        }
+    }
+    server {
+        listen       80;
+        listen       443    ssl;
+        server_name  ipfs-api.blockmed.ai;
+        ssl_certificate         /etc/nginx/certs/cert_chain.crt;
+        ssl_certificate_key     /etc/nginx/certs/private.key;
+        error_page  405     =200 $uri;
+        location / {
+            keepalive_timeout       0;
+            proxy_http_version      1.1;
+            proxy_set_header        Upgrade         $http_upgrade;
+            proxy_pass              http://192.168.1.5:5001/;
+            proxy_set_header        X-Real-IP       $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        Host            $http_host;
+            proxy_hide_header       Access-Control-Allow-Origin;
+            add_header              Access-Control-Allow-Origin         *       always;
+            add_header              Access-Control-Allow-Credentials    true    always;
+            add_header              Access-Control-Allow-Methods        POST,GET,PUT	always;
+            proxy_connect_timeout   600;
+            proxy_send_timeout      600;
+            proxy_read_timeout      600;
+            proxy_buffers           32 4k;
+        }
+    }
+    
+    server {
+        listen       80;
+        listen       443    ssl;
+        server_name  es.blockmed.ai;
+        ssl_certificate         /etc/nginx/certs/cert_chain.crt;
+        ssl_certificate_key     /etc/nginx/certs/private.key;
+        error_page  405     =200 $uri;
+        location / {
+            proxy_http_version      1.1;
+            proxy_set_header        Upgrade         $http_upgrade;
+            proxy_pass              http://192.168.1.5:9200/;
+            proxy_set_header        X-Real-IP       $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        Host            $http_host;
+            proxy_hide_header       Access-Control-Allow-Origin;
+            add_header              Access-Control-Allow-Origin         *       always;
+            add_header              Access-Control-Allow-Credentials    true    always;
+            add_header              Access-Control-Allow-Methods        POST,GET,PUT	always;
+            proxy_connect_timeout   900;
+            proxy_send_timeout      900;
+            proxy_read_timeout      900;
+            proxy_buffers           32 4k;
+        }
+    }
+}
+  ```
