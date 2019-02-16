@@ -13,14 +13,14 @@ elasticsearch:
   hosts:
     - localhost:9200
   search_url:
-    blockmed_ipfs: "https://es.blockmed.ai/blockmed-ipfs/_search/template"
+    blockmed_ipfs: "https://es.blockmed.me/blockmed-ipfs/_search/template"
   authorization: "Basic cmVhZGFsbDpyZWFkYWxs"
 
 ipfs:
-  blockmed_gateway_url: "http://ipfs-api.blockmed.ai:8080/ipfs/"
+  blockmed_gateway_url: "http://ipfs-api.blockmed.me:8080/ipfs/"
   gateway_url: "http://cloudflare-ipfs.com/ipfs/"
   api:
-    host: "ipfs-api.blockmed.ai"
+    host: "ipfs-api.blockmed.me"
     port: "443"
     protocol: "https"
 
@@ -41,10 +41,10 @@ ethereum:
   websocket_provider: "wss://mainnet.infura.io/ws"
 
 desktop_tool: 
-  mac: "http://download.blockmed.ai/app/Orion-BlockMed/0.9.1/Orion-BlockMed-0.9.1-mac.zip"
-  windows: "http://download.blockmed.ai/app/Orion-BlockMed/0.9.1/Orion-BlockMed%20Setup%200.9.1.exe"
-  rpm: "http://download.blockmed.ai/app/Orion-BlockMed/0.9.1/Orion-BlockMed-0.9.1.x86_64.rpm"
-  deb: "http://download.blockmed.ai/app/Orion-BlockMed/0.9.1/Orion-BlockMed_0.9.1_amd64.deb"
+  mac: "http://download.blockmed.me/app/Orion-BlockMed/0.9.1/Orion-BlockMed-0.9.1-mac.zip"
+  windows: "http://download.blockmed.me/app/Orion-BlockMed/0.9.1/Orion-BlockMed%20Setup%200.9.1.exe"
+  rpm: "http://download.blockmed.me/app/Orion-BlockMed/0.9.1/Orion-BlockMed-0.9.1.x86_64.rpm"
+  deb: "http://download.blockmed.me/app/Orion-BlockMed/0.9.1/Orion-BlockMed_0.9.1_amd64.deb"
 
 service_version:
   event_listener: 0.5.2

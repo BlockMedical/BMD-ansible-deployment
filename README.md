@@ -1,5 +1,9 @@
 # BlockMed Ansible Configuration Manager
 
+The `blockmed.ai` and `blockmed.me` domains are only for demostration purposes.
+You will need to apply your own personal domain name for web hosting, or run them on
+your `localhost` domain.
+
 ## Setup for control machine (e.g: localhost)
 
 ### Runtime Environment
