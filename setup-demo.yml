@@ -1,0 +1,4 @@
+---
+- import_playbook: setup-bc-ipfs-node2.yml
+- import_playbook: setup-bc-ipfs2.yml
+
