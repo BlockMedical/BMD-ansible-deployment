@@ -3,7 +3,7 @@
 log_level: Info
 version: 0.0.0
 service_name: blockmed-bc-ipfs-node
-docker_registry: blcksync
+docker_registry: alblockmed
 docker_registry_path: /bc-ipfs-node
 base_path: /mnt
 service_port: 5001
