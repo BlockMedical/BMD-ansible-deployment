@@ -1,0 +1,32 @@
+########################
+# Setup Machines
+########################
+
+eess
+
+########################
+# Machine Groups
+########################
+
+[event-listener]
+eess
+
+[bc-ipfs]
+eess
+
+[bc-ipfs-node]
+eess
+
+########################
+# Group Alias
+########################
+
+[elastic:children]
+elasticsearch
+logstash
+kibana
+
+[all:children]
+event-listener
+bc-ipfs
+bc-ipfs-node
